@@ -1,7 +1,8 @@
-package com.bridgelabz.encrypt.service;
+package com.bridgelabz.fundoo.service;
 
 
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,9 +15,9 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
-import com.bridgelabz.encrypt.dto.RegisterDTO;
-import com.bridgelabz.encrypt.model.RegisterUser;
-import com.bridgelabz.encrypt.repository.IRegisterRepository;
+import com.bridgelabz.fundoo.dto.RegisterDTO;
+import com.bridgelabz.fundoo.model.RegisterUser;
+import com.bridgelabz.fundoo.repository.IRegisterRepository;
 
 
 @Service
@@ -29,6 +30,8 @@ public class UserServiceImpl implements IUserService
 	@Autowired
 	JavaMailSender javaMailSender;
 	
+	@Autowired
+	ModelMapper modelMapper;
 	
 	public final String TOKEN_SECRET="BridgeLabz";
 
@@ -43,7 +46,6 @@ public class UserServiceImpl implements IUserService
 		System.out.println("Matching password returns...."+new BCryptPasswordEncoder().matches(password,user.getPassword()));
 		
 		return new BCryptPasswordEncoder().matches(password,user.getPassword());
-		
 	}
 	
 	
@@ -63,16 +65,12 @@ public class UserServiceImpl implements IUserService
 		if(regRepository.findByMobile(regdto.getMobile())!=null)
 		{
 			return "Mobile number already exist!!";
-		}
+		} 
 		
 		
-		RegisterUser regUser=new RegisterUser();
-		regUser.setName(regdto.getName());
-		regUser.setEmailId(regdto.getEmailId());
-		regUser.setMobile(regdto.getMobile());
-		regUser.setPassword(new BCryptPasswordEncoder().encode(regdto.getPassword()));
+		RegisterUser regUser= modelMapper.map(regdto, RegisterUser.class);
 		
-	
+	     System.out.println(regUser);
 		
 		regRepository.save(regUser);
 		

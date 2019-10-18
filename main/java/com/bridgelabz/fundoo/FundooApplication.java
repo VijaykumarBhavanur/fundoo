@@ -1,4 +1,4 @@
-package com.bridgelabz.encrypt;
+package com.bridgelabz.fundoo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,14 +8,18 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
-@ComponentScan(basePackages = {"com.bridgelabz.encrypt"})
-@EntityScan("com.bridgelabz.encrypt.model")
-@EnableMongoRepositories("com.bridgelabz.encrypt.repository")
+@ComponentScan(basePackages = {"com.bridgelabz.fundoo.config,com.bridgelabz.fundoonote"})
+@EnableMongoRepositories("com.bridgelabz.fundoonote.repository")
+/*
+ * @EntityScan("com.bridgelabz.fundoo.model")
+ * 
+ * @EnableMongoRepositories("com.bridgelabz.fundoo.repository")
+ */
 
-public class EncryptPasswordApplication {
+public class FundooApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(EncryptPasswordApplication.class, args);
+		SpringApplication.run(FundooApplication.class, args);
 	}
 
 }

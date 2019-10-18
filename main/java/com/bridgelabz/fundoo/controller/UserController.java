@@ -1,4 +1,6 @@
-package com.bridgelabz.encrypt.controller;
+package com.bridgelabz.fundoo.controller;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bridgelabz.encrypt.dto.RegisterDTO;
-import com.bridgelabz.encrypt.service.IUserService;
+import com.bridgelabz.fundoo.dto.RegisterDTO;
+import com.bridgelabz.fundoo.service.IUserService;
 
 @RestController
 @RequestMapping("/user")
@@ -35,7 +37,7 @@ public class UserController
 	}
 	
 	@PostMapping("/register")
-	public ResponseEntity<String>register(@RequestBody RegisterDTO regdto)
+	public ResponseEntity<String>register(@Valid @RequestBody  RegisterDTO regdto)
 	{
 			if(userService.registerUser(regdto).contentEquals("success"))
 			return new ResponseEntity<String>("Successfully registered....", HttpStatus.OK);

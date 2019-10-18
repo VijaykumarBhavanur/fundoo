@@ -1,8 +1,8 @@
-package com.bridgelabz.encrypt.service;
+package com.bridgelabz.fundoo.service;
 
 
-import com.bridgelabz.encrypt.dto.RegisterDTO;
-import com.bridgelabz.encrypt.model.RegisterUser;
+import com.bridgelabz.fundoo.dto.RegisterDTO;
+import com.bridgelabz.fundoo.model.RegisterUser;
 
 public interface IUserService 
 {

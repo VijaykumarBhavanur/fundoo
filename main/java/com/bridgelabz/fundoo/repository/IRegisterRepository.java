@@ -1,8 +1,8 @@
-package com.bridgelabz.encrypt.repository;
+package com.bridgelabz.fundoo.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.bridgelabz.encrypt.model.RegisterUser;
+import com.bridgelabz.fundoo.model.RegisterUser;
 
 public interface IRegisterRepository extends MongoRepository<RegisterUser, String> 
 {
