@@ -74,8 +74,6 @@ public class UserServiceImpl implements IUserService {
 
 	}
 
-
-
 	@Override
 	public String resetPassword(String token, String newpassword) {
 		String email = TokenUtil.decodeToken(token);
@@ -93,8 +91,7 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	@Override
-	public String getJWTToken(String email)
-	{
+	public String getJWTToken(String email) {
 		return TokenUtil.getJWTToken(email);
 	}
 

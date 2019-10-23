@@ -14,6 +14,6 @@ public interface ILabelService {
 	public String addNote(String noteId, String labelId);
 
 	public List<Label> getAllLabelByUser(String email);
-	
-	public boolean renameLabel(String labelId,String newLabelName);
+
+	public boolean renameLabel(String labelId, String newLabelName);
 }

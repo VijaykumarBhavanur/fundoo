@@ -9,8 +9,6 @@ import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.repository.ILabelRepository;
 import com.bridgelabz.fundoo.note.repository.INoteRepository;
-import com.bridgelabz.fundoo.util.TokenUtil;
-
 
 @Service
 public class LabelServiceImpl implements ILabelService {
@@ -22,11 +20,10 @@ public class LabelServiceImpl implements ILabelService {
 	ILabelRepository repository;
 
 	@Override
-	public String createLabel(String token, String labelName) {
+	public String createLabel(String emailId, String labelName) {
 		Label label = new Label();
-		String email = TokenUtil.decodeToken(token);
 		label.setLabelName(labelName);
-		label.setEmailId(email);
+		label.setEmailId(emailId);
 		repository.save(label);
 		return "label created successfully....";
 
@@ -35,17 +32,15 @@ public class LabelServiceImpl implements ILabelService {
 	@Override
 	public List<Label> getAllLabel() {
 		return repository.findAll();
-
 	}
 
-	
 	@Override
 	public boolean deleteLabel(String token, String labelId) {
 		System.out.println("deleting label in service by id::::::" + labelId);
 
 		try {
 			System.out.println("finding label by id in try:::::" + repository.findById(labelId));
-			
+
 			List<Note> noteList = repository.findById(labelId).get().getLabeledNotes();
 			for (Note note : noteList) {
 				noteRepository.findById(note.getId()).get().getLabelList().remove(repository.findById(labelId).get());

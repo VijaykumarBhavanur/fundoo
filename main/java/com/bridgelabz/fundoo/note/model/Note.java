@@ -12,8 +12,7 @@ import lombok.Data;
 
 @Document
 @Data
-public class Note
-{
+public class Note {
 	@Id
 	private String id;
 	private String emailId;
@@ -24,7 +23,7 @@ public class Note
 	private boolean isPinned;
 	private boolean isArchieved;
 	private boolean isTrashed;
-	private List<String>collabList;
-	@DBRef
-	private List<Label>labelList=new ArrayList<Label>();
+	private List<String> collabList = new ArrayList<String>();
+	@DBRef(lazy = true)
+	private List<Label> labelList = new ArrayList<Label>();
 }

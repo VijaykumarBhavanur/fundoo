@@ -24,7 +24,8 @@ public class LabelController {
 	ILabelService labelService;
 
 	@PostMapping("/createLabel")
-	public Response createLabel(@RequestHeader String token, @RequestParam String labelName) {
+	public Response createLabel(@RequestHeader String emailId, @RequestParam String labelName) {
+		labelService.createLabel(emailId, labelName);
 		return new Response(200, null, "new label created successfully....");
 	}
 
@@ -43,23 +44,22 @@ public class LabelController {
 			return new Response(200, labelList, "Fetched labels by email successfully....");
 		return new Response(404, null, "no notes found for given user");
 	}
+
 	@PutMapping("/renameLabel")
-	public Response updateLabel(@RequestParam String labelId,@RequestParam String newLabelName)
-	{
-		if(labelService.renameLabel(labelId, newLabelName))
-			return new Response(200,null,"Label renamed successfully...");
-		
-		return new Response(404,null,"Failed to rename label, Label with given id doesn't exist....");
+	public Response updateLabel(@RequestParam String labelId, @RequestParam String newLabelName) {
+		if (labelService.renameLabel(labelId, newLabelName))
+			return new Response(200, null, "Label renamed successfully...");
+
+		return new Response(404, null, "Failed to rename label, Label with given id doesn't exist....");
 	}
-	
+
 	@DeleteMapping("/deleteLabel")
-	public Response deleteLabel(@RequestParam String labelId ,@RequestHeader String token)
-	{
-		System.out.println("Recieved label in controller by id::::"+labelId);
-		if(labelService.deleteLabel(token, labelId))
-			return new Response(200,null,"Label deleted successfully...");
-		
-		return new Response(404,null,"No label exist with given id");
-			
+	public Response deleteLabel(@RequestParam String labelId, @RequestHeader String token) {
+		System.out.println("Recieved label in controller by id::::" + labelId);
+		if (labelService.deleteLabel(token, labelId))
+			return new Response(200, null, "Label deleted successfully...");
+
+		return new Response(404, null, "No label exist with given id");
+
 	}
 }

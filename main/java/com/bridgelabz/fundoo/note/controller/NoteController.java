@@ -28,11 +28,11 @@ public class NoteController {
 	INoteService noteService;
 
 	@PostMapping("/createNote")
-	public ResponseEntity<String> createNote(@RequestBody @Valid NoteDTO noteDto,@RequestParam String email) {
+	public ResponseEntity<String> createNote(@RequestBody @Valid NoteDTO noteDto, @RequestParam String email) {
 		if (noteDto.getTitle().isBlank() && noteDto.getDescription().isBlank())
 			return new ResponseEntity<String>("Title and description both can't be empty...", HttpStatus.OK);
 		else
-			return new ResponseEntity<String>(noteService.createNote(noteDto,email), HttpStatus.OK);
+			return new ResponseEntity<String>(noteService.createNote(noteDto, email), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/deleteNote")
@@ -40,14 +40,11 @@ public class NoteController {
 		return new ResponseEntity<String>(noteService.deleteNote(id), HttpStatus.OK);
 	}
 
-	
 	@PutMapping("/updateNote")
-	public ResponseEntity<String> updateNote(@RequestBody  NoteDTO noteDto,@RequestParam String noteId) 
-	{
-			return new ResponseEntity<String>(noteService.updateNote(noteId,noteDto), HttpStatus.OK);
+	public ResponseEntity<String> updateNote(@RequestBody NoteDTO noteDto, @RequestParam String noteId) {
+		return new ResponseEntity<String>(noteService.updateNote(noteId, noteDto), HttpStatus.OK);
 	}
-	
-	
+
 	@GetMapping("/getAllNote")
 	public ResponseEntity<?> getAllNotes() {
 
@@ -57,20 +54,17 @@ public class NoteController {
 		else
 			return new ResponseEntity<String>("No notes to display...", HttpStatus.OK);
 	}
-	
-	@PutMapping("/pinNote")
-	public ResponseEntity<String> pinNote(@RequestParam String id)
-	{
-		return new ResponseEntity<String>(noteService.pinNote(id),HttpStatus.OK);
-	}
 
+	@PutMapping("/pinNote")
+	public ResponseEntity<String> pinNote(@RequestParam String id) {
+		return new ResponseEntity<String>(noteService.pinNote(id), HttpStatus.OK);
+	}
 
 	@PutMapping("/unPinNote")
-	public ResponseEntity<String> unPinNote(@RequestParam String id)
-	{
-		return new ResponseEntity<String>(noteService.unPinNote(id),HttpStatus.OK);
+	public ResponseEntity<String> unPinNote(@RequestParam String id) {
+		return new ResponseEntity<String>(noteService.unPinNote(id), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/getAllPinnedNotes")
 	public ResponseEntity<?> getAllPinnedNotes() {
 
@@ -80,32 +74,27 @@ public class NoteController {
 		else
 			return new ResponseEntity<String>("No pinned notes...", HttpStatus.OK);
 	}
-	
+
 	@PutMapping("/archieveNote")
-	public ResponseEntity<String> archieveNote(@RequestParam String id)
-	{
-		return new ResponseEntity<String>(noteService.archieveNote(id),HttpStatus.OK);
+	public ResponseEntity<String> archieveNote(@RequestParam String id) {
+		return new ResponseEntity<String>(noteService.archieveNote(id), HttpStatus.OK);
 	}
-	
+
 	@PutMapping("/un-archieveNote")
-	public ResponseEntity<String> unArchieveNote(@RequestParam String id)
-	{
-		return new ResponseEntity<String>(noteService.unArchieveNote(id),HttpStatus.OK);
+	public ResponseEntity<String> unArchieveNote(@RequestParam String id) {
+		return new ResponseEntity<String>(noteService.unArchieveNote(id), HttpStatus.OK);
 	}
-	
-	
+
 	@PutMapping("/trashNote")
-	public ResponseEntity<String> trashNote(@RequestParam String id)
-	{
-		return new ResponseEntity<String>(noteService.trashNote(id),HttpStatus.OK);
+	public ResponseEntity<String> trashNote(@RequestParam String id) {
+		return new ResponseEntity<String>(noteService.trashNote(id), HttpStatus.OK);
 	}
-	
+
 	@PutMapping("/restoreNote")
-	public ResponseEntity<String> restoreNote(@RequestParam String id)
-	{
-		return new ResponseEntity<String>(noteService.restoreNote(id),HttpStatus.OK);
+	public ResponseEntity<String> restoreNote(@RequestParam String id) {
+		return new ResponseEntity<String>(noteService.restoreNote(id), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/getAllArchievedNotes")
 	public ResponseEntity<?> getAllArchievedNotes() {
 
@@ -115,7 +104,7 @@ public class NoteController {
 		else
 			return new ResponseEntity<String>("No archieved notes...", HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/getAllTrashedNotes")
 	public ResponseEntity<?> getAllTrashedNotes() {
 
@@ -125,16 +114,46 @@ public class NoteController {
 		else
 			return new ResponseEntity<String>("No archieved notes...", HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/getNotesSortedByName")
-	public Response getSortedNotesByName()
-	{
-		return new Response(200, noteService.sortNoteByName(),"List of notes sorted by name");
+	public Response getSortedNotesByName() {
+		return new Response(200, noteService.sortNoteByName(), "List of notes sorted by name");
 	}
-	
+
 	@GetMapping("/getNotesSortedByEditedDate")
-	public Response getSortedNotesByEditedDate()
-	{
-		return new Response(200, noteService.sortNoteByEditedDate(),"List of notes sorted by created date");
+	public Response getSortedNotesByEditedDate() {
+		return new Response(200, noteService.sortNoteByEditedDate(), "List of notes sorted by created date");
 	}
+
+	@PutMapping("/addCollabrator")
+	public Response addCollabaratorToNote(@RequestParam String noteId, @RequestParam String collabaratorEmail) {
+		if (noteService.addCollabarator(noteId, collabaratorEmail))
+			return new Response(200, null, "Collabarator added successfully....");
+
+		return new Response(404, null, "Invalid noteId");
+	}
+
+	@GetMapping("/getAllCollabaratorsOfNote")
+	public Response getAllCollabarators(@RequestParam String noteId) {
+		List<String> collabList = noteService.getAllCollabarators(noteId);
+		if (collabList == null)
+			return new Response(407, null, "Invalid noteId.....");
+		if (!collabList.isEmpty())
+			return new Response(200, collabList, "List of collabarators....");
+		else
+			return new Response(200, null, "No collabarartors found for given note...");
+
+	}
+
+	@PutMapping("/addLabel")
+	public Response addLabelToNote(@RequestParam String noteId, @RequestParam String labelId) {
+		System.out.println("Recieved in controller noteId:\n" + noteId + "\nLabelId: " + labelId);
+		String response = noteService.addLabelToNote(noteId, labelId);
+		if (noteService.addLabelToNote(noteId, labelId).contentEquals("success"))
+			return new Response(200, null, "Label added to note successfully");
+		else
+			return new Response(407, null, response);
+
+	}
+
 }

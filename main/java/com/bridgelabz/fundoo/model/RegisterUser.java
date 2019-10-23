@@ -10,17 +10,15 @@ import com.bridgelabz.fundoo.note.model.Note;
 
 import lombok.Data;
 
-
 @Document(collection = "Register")
 @Data
-public class RegisterUser 
-{
+public class RegisterUser {
 	@Id
 	private String id;
 	private String emailId;
 	private String name;
 	private String mobile;
 	private String password;
-	private List<Label>labelList;
-	private List<Note>noteList;
+	private List<Label> labelList;
+	private List<Note> noteList;
 }

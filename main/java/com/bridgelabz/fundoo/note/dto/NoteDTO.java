@@ -5,8 +5,7 @@ import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class NoteDTO
-{
+public class NoteDTO {
 	@NotBlank
 	private String title;
 	@NotBlank

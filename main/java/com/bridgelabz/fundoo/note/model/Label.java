@@ -8,15 +8,14 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
+
 @Data
 @Document(collection = "label")
-public class Label 
-{
+public class Label {
 	@Id
 	private String labelId;
 	private String emailId;
 	private String labelName;
-	@DBRef
-	private List<Note>labeledNotes=new ArrayList<Note>();
+	@DBRef(lazy = true)
+	private List<Note> labeledNotes = new ArrayList<Note>();
 }
- 

@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
+import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
+import com.bridgelabz.fundoo.note.repository.ILabelRepository;
 import com.bridgelabz.fundoo.note.repository.INoteRepository;
 
 @Service
@@ -19,8 +21,11 @@ public class NoteServiceImpl implements INoteService {
 	@Autowired
 	INoteRepository repository;
 
+	@Autowired
+	ILabelRepository labelRepository;
+
 	@Override
-	public String createNote(NoteDTO noteDto,String email) {
+	public String createNote(NoteDTO noteDto, String email) {
 		try {
 
 			Note newNote = modelMapper.map(noteDto, Note.class);
@@ -54,7 +59,7 @@ public class NoteServiceImpl implements INoteService {
 	@Override
 	public List<Note> getAllNote() {
 		List<Note> noteList = repository.findAll();
-		
+
 		return noteList;
 	}
 
@@ -171,19 +176,69 @@ public class NoteServiceImpl implements INoteService {
 	}
 
 	@Override
-	public List<Note> sortNoteByName()
-	{
-		List<Note>noteList=getAllNote();
-		noteList.sort((Note n1, Note n2)->n1.getTitle().compareTo(n2.getTitle()));
+	public List<Note> sortNoteByName() {
+		List<Note> noteList = getAllNote();
+		noteList.sort((Note n1, Note n2) -> n1.getTitle().compareTo(n2.getTitle()));
 		return noteList;
 	}
 
 	@Override
-	public List<Note> sortNoteByEditedDate() 
-	{
-		List<Note>noteList=getAllNote();
-		noteList.sort((Note n1, Note n2)->n1.getCreatedAt().compareTo(n2.getCreatedAt()));
+	public List<Note> sortNoteByEditedDate() {
+		List<Note> noteList = getAllNote();
+		noteList.sort((Note n1, Note n2) -> n1.getCreatedAt().compareTo(n2.getCreatedAt()));
 		return noteList;
+	}
+
+	@Override
+	public boolean addCollabarator(String noteId, String collabaratorEmail) {
+		Note note = repository.findById(noteId).get();
+		if (note == null)
+			return false;
+
+		else {
+			note.getCollabList().add(collabaratorEmail);
+			repository.save(note);
+		}
+		return true;
+	}
+
+	@Override
+	public List<String> getAllCollabarators(String noteId) {
+		Note note = repository.findById(noteId).get();
+		if (note != null)
+			return repository.findById(noteId).get().getCollabList();
+		else
+			return null;
+	}
+
+	@Override
+	public String addLabelToNote(String noteId, String labelId) {
+		System.out.println("Recieved in service noteId:\n" + noteId + "\nLabelId: " + labelId);
+
+		System.out.println("No. Of records: " + repository.count());
+
+		Note note = repository.findById(noteId).get();
+		System.out.println("Found note by id: " + note);
+		if (note == null)
+			return "Invalid noteId";
+
+		Label label = labelRepository.findById(labelId).get();
+		System.out.println("Found label by id: " + label);
+
+		if (label == null)
+			return "Invalid labelId";
+
+		System.out.println("Adding label to note:::::::::::");
+		note.getLabelList().add(label);
+
+		System.out.println("Adding note to label:::::::::::");
+		label.getLabeledNotes().add(note);
+
+		System.out.println("Saving changes:::::::::");
+		repository.save(note);
+		labelRepository.save(label);
+
+		return "success";
 	}
 
 }
