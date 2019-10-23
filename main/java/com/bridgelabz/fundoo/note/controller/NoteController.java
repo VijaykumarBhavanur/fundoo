@@ -1,4 +1,4 @@
-package com.bridgelabz.fundoonote.controller;
+package com.bridgelabz.fundoo.note.controller;
 
 import java.util.List;
 
@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bridgelabz.fundoonote.dto.NoteDTO;
-import com.bridgelabz.fundoonote.model.Note;
-import com.bridgelabz.fundoonote.service.INoteService;
+import com.bridgelabz.fundoo.note.dto.NoteDTO;
+import com.bridgelabz.fundoo.note.model.Note;
+import com.bridgelabz.fundoo.note.service.INoteService;
+import com.bridgelabz.fundoo.responseentity.Response;
 
 @RestController
 @RequestMapping("/note")
@@ -27,11 +28,11 @@ public class NoteController {
 	INoteService noteService;
 
 	@PostMapping("/createNote")
-	public ResponseEntity<String> createNote(@RequestBody @Valid NoteDTO noteDto) {
+	public ResponseEntity<String> createNote(@RequestBody @Valid NoteDTO noteDto,@RequestParam String email) {
 		if (noteDto.getTitle().isBlank() && noteDto.getDescription().isBlank())
 			return new ResponseEntity<String>("Title and description both can't be empty...", HttpStatus.OK);
 		else
-			return new ResponseEntity<String>(noteService.createNote(noteDto), HttpStatus.OK);
+			return new ResponseEntity<String>(noteService.createNote(noteDto,email), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/deleteNote")
@@ -45,7 +46,6 @@ public class NoteController {
 	{
 			return new ResponseEntity<String>(noteService.updateNote(noteId,noteDto), HttpStatus.OK);
 	}
-	
 	
 	
 	@GetMapping("/getAllNote")
@@ -94,6 +94,18 @@ public class NoteController {
 	}
 	
 	
+	@PutMapping("/trashNote")
+	public ResponseEntity<String> trashNote(@RequestParam String id)
+	{
+		return new ResponseEntity<String>(noteService.trashNote(id),HttpStatus.OK);
+	}
+	
+	@PutMapping("/restoreNote")
+	public ResponseEntity<String> restoreNote(@RequestParam String id)
+	{
+		return new ResponseEntity<String>(noteService.restoreNote(id),HttpStatus.OK);
+	}
+	
 	@GetMapping("/getAllArchievedNotes")
 	public ResponseEntity<?> getAllArchievedNotes() {
 
@@ -114,5 +126,15 @@ public class NoteController {
 			return new ResponseEntity<String>("No archieved notes...", HttpStatus.OK);
 	}
 	
+	@GetMapping("/getNotesSortedByName")
+	public Response getSortedNotesByName()
+	{
+		return new Response(200, noteService.sortNoteByName(),"List of notes sorted by name");
+	}
 	
+	@GetMapping("/getNotesSortedByEditedDate")
+	public Response getSortedNotesByEditedDate()
+	{
+		return new Response(200, noteService.sortNoteByEditedDate(),"List of notes sorted by created date");
+	}
 }

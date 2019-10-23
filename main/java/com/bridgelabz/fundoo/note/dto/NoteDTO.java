@@ -1,4 +1,4 @@
-package com.bridgelabz.fundoonote.dto;
+package com.bridgelabz.fundoo.note.dto;
 
 import javax.validation.constraints.NotBlank;
 

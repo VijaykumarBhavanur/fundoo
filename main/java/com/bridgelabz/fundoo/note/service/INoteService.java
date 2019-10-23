@@ -1,13 +1,13 @@
-package com.bridgelabz.fundoonote.service;
+package com.bridgelabz.fundoo.note.service;
 
 import java.util.List;
 
-import com.bridgelabz.fundoonote.dto.NoteDTO;
-import com.bridgelabz.fundoonote.model.Note;
+import com.bridgelabz.fundoo.note.dto.NoteDTO;
+import com.bridgelabz.fundoo.note.model.Note;
 
 public interface INoteService
 {
-	public String createNote(NoteDTO noteDto);
+	public String createNote(NoteDTO noteDto,String email);
 	public String deleteNote(String noteId);
 	public String updateNote(String noteId,NoteDTO note);
 	public List<Note> getAllNote();
@@ -21,4 +21,7 @@ public interface INoteService
 	public List<Note>getPinnedNotes();
 	public List<Note> getArchievedNotes();
 	public List<Note> getTrashedNotes();
+	
+	public List<Note>sortNoteByName();
+	public List<Note>sortNoteByEditedDate();
 }

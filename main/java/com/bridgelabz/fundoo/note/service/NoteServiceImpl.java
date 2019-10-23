@@ -1,4 +1,4 @@
-package com.bridgelabz.fundoonote.service;
+package com.bridgelabz.fundoo.note.service;
 
 import java.util.Date;
 import java.util.List;
@@ -7,9 +7,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.bridgelabz.fundoonote.dto.NoteDTO;
-import com.bridgelabz.fundoonote.model.Note;
-import com.bridgelabz.fundoonote.repository.INoteRepository;
+import com.bridgelabz.fundoo.note.dto.NoteDTO;
+import com.bridgelabz.fundoo.note.model.Note;
+import com.bridgelabz.fundoo.note.repository.INoteRepository;
 
 @Service
 public class NoteServiceImpl implements INoteService {
@@ -20,9 +20,11 @@ public class NoteServiceImpl implements INoteService {
 	INoteRepository repository;
 
 	@Override
-	public String createNote(NoteDTO noteDto) {
+	public String createNote(NoteDTO noteDto,String email) {
 		try {
+
 			Note newNote = modelMapper.map(noteDto, Note.class);
+			newNote.setEmailId(email);
 			newNote.setCreatedAt(java.util.Calendar.getInstance().getTime());
 			newNote.setEditedAt(java.util.Calendar.getInstance().getTime());
 			repository.save(newNote);
@@ -49,21 +51,13 @@ public class NoteServiceImpl implements INoteService {
 		}
 	}
 
-	
-
 	@Override
 	public List<Note> getAllNote() {
 		List<Note> noteList = repository.findAll();
+		
 		return noteList;
 	}
 
-	public List<Note>displayNotes() {
-		
-		List<Note> noteList = repository.findAll();
-		return noteList;
-	}
-	
-	
 	@Override
 	public String pinNote(String id) {
 		Note notefromdb = repository.findById(id).get();
@@ -93,7 +87,7 @@ public class NoteServiceImpl implements INoteService {
 		Note notefromdb = repository.findById(id).get();
 		if (notefromdb != null) {
 			notefromdb.setArchieved(true);
-			
+
 			repository.save(notefromdb);
 			return "note archived successfully....";
 		} else
@@ -131,8 +125,7 @@ public class NoteServiceImpl implements INoteService {
 	}
 
 	@Override
-	public String trashNote(String id) 
-	{
+	public String trashNote(String id) {
 		Note notefromdb = repository.findById(id).get();
 		if (notefromdb != null) {
 			notefromdb.setTrashed(true);
@@ -145,8 +138,7 @@ public class NoteServiceImpl implements INoteService {
 	}
 
 	@Override
-	public String restoreNote(String id)
-	{
+	public String restoreNote(String id) {
 		Note notefromdb = repository.findById(id).get();
 		if (notefromdb != null) {
 			notefromdb.setTrashed(false);
@@ -159,27 +151,39 @@ public class NoteServiceImpl implements INoteService {
 	}
 
 	@Override
-	public String updateNote(String noteId,NoteDTO note) 
-	{
+	public String updateNote(String noteId, NoteDTO note) {
 		Note notefromdb = repository.findById(noteId).get();
-		if (notefromdb != null)
-		{
-			if(!note.getTitle().isEmpty())
-			{
-			notefromdb.setTitle(note.getTitle());
+		if (notefromdb != null) {
+			if (!note.getTitle().isEmpty()) {
+				notefromdb.setTitle(note.getTitle());
 			}
-			
-			if(!note.getDescription().isEmpty())
-			{
+
+			if (!note.getDescription().isEmpty()) {
 				notefromdb.setDescription(note.getDescription());
 			}
-			
+
 			notefromdb.setEditedAt(new Date());
 			repository.save(notefromdb);
 			return "note updated successfully....";
 		} else
 			return "No note exist with given id";
-		
+
 	}
-	
+
+	@Override
+	public List<Note> sortNoteByName()
+	{
+		List<Note>noteList=getAllNote();
+		noteList.sort((Note n1, Note n2)->n1.getTitle().compareTo(n2.getTitle()));
+		return noteList;
+	}
+
+	@Override
+	public List<Note> sortNoteByEditedDate() 
+	{
+		List<Note>noteList=getAllNote();
+		noteList.sort((Note n1, Note n2)->n1.getCreatedAt().compareTo(n2.getCreatedAt()));
+		return noteList;
+	}
+
 }
