@@ -8,8 +8,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.fundoo.dto.RegisterDTO;
+import com.bridgelabz.fundoo.exception.LoginException;
+import com.bridgelabz.fundoo.exception.RegistrationException;
+import com.bridgelabz.fundoo.exception.UnautorizedException;
 import com.bridgelabz.fundoo.model.RegisterUser;
 import com.bridgelabz.fundoo.repository.IRegisterRepository;
+import com.bridgelabz.fundoo.responseentity.Response;
 import com.bridgelabz.fundoo.util.TokenUtil;
 
 @Service
@@ -27,67 +31,57 @@ public class UserServiceImpl implements IUserService {
 	@Autowired
 	BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	public boolean validateCredentials(String email, String password) {
+	public Response validateCredentials(String email, String password) {
 		RegisterUser user = regRepository.findByEmailId(email);
+		boolean result = bCryptPasswordEncoder.matches(password, user.getPassword());
 
-		System.out.println("Found user by emailId:::" + user);
+		if (result && user != null)
+			return new Response(200, null, "Login sucess....");
 
-		System.out
-				.println("Matching password returns...." + bCryptPasswordEncoder.matches(password, user.getPassword()));
-
-		return bCryptPasswordEncoder.matches(password, user.getPassword());
+		throw new LoginException("Invalid Credentials");
 	}
 
-	public RegisterUser getUserByEmail(String email) {
-		return regRepository.findByEmailId(email);
-	}
-
-	public String registerUser(RegisterDTO regdto) {
-		System.out.println("Registering user by email::::" + regdto.getEmailId());
+	public Response registerUser(RegisterDTO regdto) {
 		if (regRepository.findByEmailId(regdto.getEmailId()) != null) {
-			return "EmailId already exist!!";
+			throw new RegistrationException("EmailId already exist!!");
 		}
 
 		if (regRepository.findByMobile(regdto.getMobile()) != null) {
-			return "Mobile number already exist!!";
+			throw new RegistrationException("Mobile number already exist!!");
 		}
 
 		RegisterUser regUser = modelMapper.map(regdto, RegisterUser.class);
 		regUser.setPassword(bCryptPasswordEncoder.encode(regdto.getPassword()));
 
-		System.out.println(regUser);
-
 		sendEmail(regdto.getEmailId(), TokenUtil.getJWTToken(regdto.getEmailId()));
 
 		regRepository.save(regUser);
 
-		return "success";
+		return new Response(200, null, "success");
 
 	}
 
-	public void sendEmail(String email, String token) {
+	public Response sendEmail(String email, String token) {
 		SimpleMailMessage mail = new SimpleMailMessage();
 		mail.setTo(email);
 		mail.setSubject("Testing Mail API");
 		mail.setText("Use this token to change password===>  " + token);
 		javaMailSender.send(mail);
+		return new Response(200, null, "Mail sent successfully...");
 
 	}
 
 	@Override
-	public String resetPassword(String token, String newpassword) {
+	public Response resetPassword(String token, String newpassword) {
 		String email = TokenUtil.decodeToken(token);
-		System.out.println("Decoded email:::" + email);
 		if (email != null) {
 			RegisterUser user = regRepository.findByEmailId(email);
-			System.out.println("Found User::::" + user.getName());
-			System.out.println("setting new password::::::" + newpassword);
 			user.setPassword(new BCryptPasswordEncoder().encode(newpassword));
 			regRepository.save(user);
-			return "success";
+			return new Response(200, null, "success");
 		}
 
-		return "Invalid token.....";
+		throw new UnautorizedException("Unautorized");
 	}
 
 	@Override

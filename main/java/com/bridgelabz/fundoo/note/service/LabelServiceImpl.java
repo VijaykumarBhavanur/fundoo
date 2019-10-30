@@ -9,37 +9,50 @@ import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.repository.ILabelRepository;
 import com.bridgelabz.fundoo.note.repository.INoteRepository;
+import com.bridgelabz.fundoo.responseentity.Response;
 
 @Service
 public class LabelServiceImpl implements ILabelService {
 
 	@Autowired
-	INoteRepository noteRepository;
+	private INoteRepository noteRepository;
 
 	@Autowired
-	ILabelRepository repository;
+	private ILabelRepository repository;
 
+	/**
+	 * Method to create new label
+	 * 
+	 * @param token
+	 * @param labelName
+	 * @return response object with "success" message
+	 */
 	@Override
-	public String createLabel(String emailId, String labelName) {
+	public Response createLabel(String emailId, String labelName) {
 		Label label = new Label();
 		label.setLabelName(labelName);
 		label.setEmailId(emailId);
 		repository.save(label);
-		return "label created successfully....";
-
+		return new Response(200, null, "label created successfully....");
 	}
 
+	/**
+	 * @return Response with List of all labels
+	 */
 	@Override
-	public List<Label> getAllLabel() {
-		return repository.findAll();
+	public Response getAllLabel() {
+		return new Response(200, repository.findAll(), "List of all labels");
 	}
 
+	/**
+	 * @param noteId
+	 * @param labelId
+	 * @return Response with success or failure message
+	 */
 	@Override
-	public boolean deleteLabel(String token, String labelId) {
-		System.out.println("deleting label in service by id::::::" + labelId);
+	public Response deleteLabel(String token, String labelId) {
 
 		try {
-			System.out.println("finding label by id in try:::::" + repository.findById(labelId));
 
 			List<Note> noteList = repository.findById(labelId).get().getLabeledNotes();
 			for (Note note : noteList) {
@@ -48,55 +61,40 @@ public class LabelServiceImpl implements ILabelService {
 			}
 
 			if (repository.findById(labelId).get() != null) {
-				System.out.println("finding label by id:::::" + repository.findById(labelId));
 				repository.deleteById(labelId);
 
-				return true;
-			} else
-				return false;
+				return new Response(200, null, "Label deleted successfully");
+			}
 		} catch (Exception e) {
 			System.out.println("In catch..................\n" + e.getMessage());
 		}
 
-		System.out.println("returning false");
-		return false;
+		return new Response(200, null, "Invalid labelId");
 	}
 
+	/**
+	 * @param email
+	 * @return list of labels of given user
+	 */
 	@Override
-	public String addNote(String noteId, String labelId) {
-		Note note = noteRepository.findById(noteId).get();
-		System.out.println("found note by id::::\n" + note);
-		if (note == null)
-			return "Invalid note";
-
-		Label label = repository.findById(labelId).get();
-		System.out.println("found label by id::::\n" + label);
-		if (label == null)
-			return "Invalid label";
-
-		label.getLabeledNotes().add(note);
-		// adding label to note
-		note.getLabelList().add(label);
-		repository.save(label);
-		noteRepository.save(note);
-		return "success";
-
+	public Response getAllLabelByUser(String email) {
+		return new Response(200, repository.findByEmailId(email), "List of labels of particular user");
 	}
 
+	/**
+	 * @param labelId
+	 * @param newLabelName
+	 * @return response with success or failure message
+	 */
 	@Override
-	public List<Label> getAllLabelByUser(String email) {
-		return repository.findByEmailId(email);
-	}
-
-	@Override
-	public boolean renameLabel(String labelId, String newLabelName) {
+	public Response renameLabel(String labelId, String newLabelName) {
 		Label labelFromDb = repository.findById(labelId).get();
 		if (labelFromDb == null)
-			return false;
+			return new Response(200, null, "Invalid labelId");
 
 		labelFromDb.setLabelName(newLabelName);
 		repository.save(labelFromDb);
-		return true;
+		return new Response(200, null, "Label renamed successfully...");
 
 	}
 

@@ -3,6 +3,9 @@ package com.bridgelabz.fundoo.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,36 +26,30 @@ public class UserController {
 	IUserService userService;
 
 	@GetMapping("/login")
-	public Response login(@RequestHeader String emailId, @RequestHeader String password) {
-		if (userService.validateCredentials(emailId, password))
-			return new Response(200, null, "Login success...");
-		else
-			return new Response(401, null, "Invalid Credentials...");
+	public ResponseEntity<Response> login(@RequestHeader String emailId, @RequestHeader String password)
+	{
+		Response response=userService.validateCredentials(emailId, password);
+		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
 
 	@PostMapping("/register")
-	public Response register(@RequestBody @Valid RegisterDTO regdto) {
-		if (userService.registerUser(regdto).contentEquals("success"))
-			return new Response(200, null, "Registration success for user: " + regdto.getName());
-		else
-			return new Response(407, null, userService.registerUser(regdto));
+	public ResponseEntity<Response> register(@RequestBody @Valid RegisterDTO regdto) 
+	{
+		Response response=userService.registerUser(regdto);
+		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
 
 	@GetMapping("/forgotPassword")
-	public Response forgotPassword(@RequestHeader String email) {
+	public ResponseEntity<Response> forgotPassword(@RequestHeader String email) {
 		String token = userService.getJWTToken(email);
-		userService.sendEmail(email, token);
-		return new Response(200, null, "Token sent to email successfully....");
+		Response response=userService.sendEmail(email, token);
+		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
 
 	@PutMapping("/resetPassword")
-	public Response resetPassword(@RequestHeader String token, @RequestHeader String newPassword) {
-		System.out.println("Got new password from postman:::::::::" + newPassword);
-		String reset = userService.resetPassword(token, newPassword);
-		if (reset.contentEquals("success"))
-			return new Response(200, null, "New password set successfully....");
-		else
-			return new Response(401, null, reset);
+	public ResponseEntity<Response> resetPassword(@RequestHeader String token, @RequestHeader String newPassword) {
+		Response response= userService.resetPassword(token, newPassword);
+			return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
 
 }

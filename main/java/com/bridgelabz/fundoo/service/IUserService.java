@@ -1,18 +1,16 @@
 package com.bridgelabz.fundoo.service;
 
 import com.bridgelabz.fundoo.dto.RegisterDTO;
-import com.bridgelabz.fundoo.model.RegisterUser;
+import com.bridgelabz.fundoo.responseentity.Response;
 
 public interface IUserService {
-	public boolean validateCredentials(String email, String pass);
+	public Response validateCredentials(String email, String pass);
 
-	public String registerUser(RegisterDTO regdto);
+	public Response registerUser(RegisterDTO regdto);
 
-	public RegisterUser getUserByEmail(String email);
+	public Response sendEmail(String email, String token);
 
-	public void sendEmail(String email, String token);
-
-	public String resetPassword(String token, String newpassword);
+	public Response resetPassword(String token, String newpassword);
 
 	public String getJWTToken(String email);
 }

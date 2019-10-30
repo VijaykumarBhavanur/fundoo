@@ -8,11 +8,15 @@ import com.bridgelabz.fundoo.note.model.Note;
 
 @Repository
 public interface INoteRepository extends MongoRepository<Note, String> {
-	public List<Note> findByIsPinned(boolean pin);
+	public List<Note> findByIsPinnedAndEmailId(boolean pin, String EmailId);
 
-	public List<Note> findByIsArchieved(boolean archive);
+	public List<Note> findByIsArchievedAndEmailId(boolean archive, String EmailId);
 
-	public List<Note> findByIsTrashed(boolean trash);
+	public List<Note> findByIsTrashedAndEmailId(boolean trash, String EmailId);
 
-	public void deleteByIsTrashed(boolean trash);
+	public void deleteByIsTrashedAndEmailId(boolean trash, String EmailId);
+
+	public Note findByIdAndEmailId(String id, String emailId);
+
+	public List<Note> findByEmailId(String emailId);
 }

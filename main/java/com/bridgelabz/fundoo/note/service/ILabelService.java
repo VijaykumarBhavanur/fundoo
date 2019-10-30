@@ -1,19 +1,16 @@
 package com.bridgelabz.fundoo.note.service;
 
-import java.util.List;
-
-import com.bridgelabz.fundoo.note.model.Label;
+import com.bridgelabz.fundoo.responseentity.Response;
 
 public interface ILabelService {
-	public String createLabel(String token, String labelName);
 
-	public List<Label> getAllLabel();
+	public Response createLabel(String token, String labelName);
 
-	public boolean deleteLabel(String token, String labelId);
+	public Response getAllLabel();
 
-	public String addNote(String noteId, String labelId);
+	public Response deleteLabel(String token, String labelId);
 
-	public List<Label> getAllLabelByUser(String email);
+	public Response getAllLabelByUser(String email);
 
-	public boolean renameLabel(String labelId, String newLabelName);
+	public Response renameLabel(String labelId, String newLabelName);
 }

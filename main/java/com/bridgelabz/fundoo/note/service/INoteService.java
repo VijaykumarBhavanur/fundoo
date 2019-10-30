@@ -1,44 +1,36 @@
 package com.bridgelabz.fundoo.note.service;
 
-import java.util.List;
-
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
-import com.bridgelabz.fundoo.note.model.Note;
+import com.bridgelabz.fundoo.responseentity.Response;
 
 public interface INoteService {
-	public String createNote(NoteDTO noteDto, String email);
+	public Response createNote(NoteDTO noteDto, String token);
 
-	public String deleteNote(String noteId);
+	public Response deleteNote(String noteId, String token);
 
-	public String updateNote(String noteId, NoteDTO note);
+	public Response updateNote(String noteId, NoteDTO note, String token);
 
-	public List<Note> getAllNote();
+	public Response getAllNote(String token);
 
-	public String pinNote(String id);
+	public Response pinNote(String id, String token);
 
-	public String unPinNote(String id);
+	public Response archieveNote(String id, String token);
 
-	public String archieveNote(String id);
+	public Response trashNote(String id, String token);
 
-	public String unArchieveNote(String id);
+	public Response getPinnedNotes(String token);
 
-	public String trashNote(String id);
+	public Response getArchievedNotes(String token);
 
-	public String restoreNote(String id);
+	public Response getTrashedNotes(String token);
 
-	public List<Note> getPinnedNotes();
+	public Response sortNoteByName(String token);
 
-	public List<Note> getArchievedNotes();
+	public Response sortNoteByEditedDate(String token);
 
-	public List<Note> getTrashedNotes();
+	public Response addCollabarator(String noteId, String collabaratorEmail, String token);
 
-	public List<Note> sortNoteByName();
+	public Response getAllCollabarators(String noteId, String token);
 
-	public List<Note> sortNoteByEditedDate();
-
-	public boolean addCollabarator(String noteId, String collabaratorEmail);
-
-	public List<String> getAllCollabarators(String noteId);
-
-	public String addLabelToNote(String noteId, String labelId);
+	public Response addLabelToNote(String noteId, String labelId, String token);
 }
