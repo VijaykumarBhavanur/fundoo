@@ -20,16 +20,16 @@ import com.bridgelabz.fundoo.util.TokenUtil;
 public class UserServiceImpl implements IUserService {
 
 	@Autowired
-	IRegisterRepository regRepository;
+	private IRegisterRepository regRepository;
 
 	@Autowired
-	JavaMailSender javaMailSender;
+	private JavaMailSender javaMailSender;
 
 	@Autowired
-	ModelMapper modelMapper;
+	private  ModelMapper modelMapper;
 
 	@Autowired
-	BCryptPasswordEncoder bCryptPasswordEncoder;
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public Response validateCredentials(String email, String password) {
 		RegisterUser user = regRepository.findByEmailId(email);

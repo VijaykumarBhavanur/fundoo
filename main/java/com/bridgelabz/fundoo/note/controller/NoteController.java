@@ -21,7 +21,7 @@ import com.bridgelabz.fundoo.responseentity.Response;
 @RequestMapping("/notes")
 public class NoteController {
 	@Autowired
-	INoteService noteService;
+	private INoteService noteService;
 
 	@PostMapping("/note")
 	public ResponseEntity<Response> createNote(@RequestBody NoteDTO noteDto, @RequestHeader String token) {

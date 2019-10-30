@@ -20,7 +20,7 @@ import com.bridgelabz.fundoo.responseentity.Response;
 public class LabelController {
 
 	@Autowired
-	ILabelService labelService;
+	private ILabelService labelService;
 
 	@PostMapping("/label")
 	public ResponseEntity<Response> createLabel(@RequestHeader String emailId, @RequestParam String labelName) {

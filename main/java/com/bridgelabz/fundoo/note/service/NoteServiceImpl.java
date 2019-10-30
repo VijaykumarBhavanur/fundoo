@@ -20,15 +20,15 @@ import com.bridgelabz.fundoo.util.TokenUtil;
 public class NoteServiceImpl implements INoteService {
 
 	@Autowired
-	ModelMapper modelMapper;
+	private ModelMapper modelMapper;
 	@Autowired
-	INoteRepository repository;
+	private INoteRepository repository;
 
 	@Autowired
-	ILabelRepository labelRepository;
+	private ILabelRepository labelRepository;
 
 	@Autowired
-	Environment environment;
+	private Environment environment;
 
 	/**
 	 * Method to create a new note 

@@ -23,7 +23,7 @@ import com.bridgelabz.fundoo.service.IUserService;
 public class UserController {
 
 	@Autowired
-	IUserService userService;
+	private IUserService userService;
 
 	@GetMapping("/login")
 	public ResponseEntity<Response> login(@RequestHeader String emailId, @RequestHeader String password)
