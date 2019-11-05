@@ -1,5 +1,7 @@
 package com.bridgelabz.fundoo.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
@@ -12,16 +14,19 @@ import com.auth0.jwt.interfaces.Verification;
 @Component
 public class TokenUtil {
 
+	private TokenUtil() {
+	}
+
 	public static final String TOKEN_SECRET = "BridgeLabz";
+	private static final Logger LOGGER = LoggerFactory.getLogger(TokenUtil.class);
 
 	public static String getJWTToken(String email) {
 		try {
 			Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET);
 
-			String token = JWT.create().withClaim("emailId", email).sign(algorithm);
-			return token;
+			return JWT.create().withClaim("emailId", email).sign(algorithm);
 		} catch (Exception e) {
-			System.out.println("Unable to create JWT Token");
+			LOGGER.error("Unable to create JWT Token");
 		}
 		return null;
 	}
@@ -31,8 +36,10 @@ public class TokenUtil {
 		try {
 			verification = JWT.require(Algorithm.HMAC256(TOKEN_SECRET));
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			LOGGER.error("Unable to decode JWT Token");
 		}
+		if (verification == null)
+			return "Unable to decode JWT Token";
 		JWTVerifier jwtverifier = verification.build();
 		DecodedJWT decodedjwt = jwtverifier.verify(token);
 

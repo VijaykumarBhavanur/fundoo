@@ -4,14 +4,15 @@ import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Document(collection = "Register")
 @Data
+@AllArgsConstructor
 public class RegisterUser {
 	@Id
 	private String id;
@@ -21,4 +22,7 @@ public class RegisterUser {
 	private String password;
 	private List<Label> labelList;
 	private List<Note> noteList;
+	private String profilePic;
+	private boolean isVerified;
+	
 }

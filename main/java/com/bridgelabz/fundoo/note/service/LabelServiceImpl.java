@@ -1,8 +1,12 @@
 package com.bridgelabz.fundoo.note.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.fundoo.note.model.Label;
@@ -10,6 +14,7 @@ import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.repository.ILabelRepository;
 import com.bridgelabz.fundoo.note.repository.INoteRepository;
 import com.bridgelabz.fundoo.responseentity.Response;
+import com.bridgelabz.fundoo.util.Utility;
 
 @Service
 public class LabelServiceImpl implements ILabelService {
@@ -19,6 +24,8 @@ public class LabelServiceImpl implements ILabelService {
 
 	@Autowired
 	private ILabelRepository repository;
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(LabelServiceImpl.class);
 
 	/**
 	 * Method to create new label
@@ -33,7 +40,7 @@ public class LabelServiceImpl implements ILabelService {
 		label.setLabelName(labelName);
 		label.setEmailId(emailId);
 		repository.save(label);
-		return new Response(200, null, "label created successfully....");
+		return new Response(HttpStatus.OK, null,Utility.NEW_RECORD_CREATED);
 	}
 
 	/**
@@ -41,7 +48,12 @@ public class LabelServiceImpl implements ILabelService {
 	 */
 	@Override
 	public Response getAllLabel() {
-		return new Response(200, repository.findAll(), "List of all labels");
+		
+		List<Label>labelList=repository.findAll();
+		if(labelList!=null)
+		  return new Response(HttpStatus.OK,labelList, "List of all labels");
+		
+		return new Response(HttpStatus.NOT_FOUND,null,Utility.RECORD_NOT_FOUND);
 	}
 
 	/**
@@ -53,23 +65,32 @@ public class LabelServiceImpl implements ILabelService {
 	public Response deleteLabel(String token, String labelId) {
 
 		try {
-
-			List<Note> noteList = repository.findById(labelId).get().getLabeledNotes();
-			for (Note note : noteList) {
-				noteRepository.findById(note.getId()).get().getLabelList().remove(repository.findById(labelId).get());
-				noteRepository.save(note);
-			}
-
-			if (repository.findById(labelId).get() != null) {
-				repository.deleteById(labelId);
-
-				return new Response(200, null, "Label deleted successfully");
+			List<Note> noteList;
+			Optional<Label> label = repository.findById(labelId);
+			
+			if (label.isPresent())
+			{
+					noteList = label.get().getLabeledNotes();
+					
+				for (Note note : noteList) 
+				{
+					Optional<Note> notefromdb = noteRepository.findById(note.getId());
+					if(notefromdb.isPresent())
+					{
+						notefromdb.get().getLabelList().remove(label.get());
+						noteRepository.save(note);
+					}
+				}
+	
+					repository.deleteById(labelId);
+	
+					return new Response(HttpStatus.OK, null,Utility.RECORD_DELETED);
 			}
 		} catch (Exception e) {
-			System.out.println("In catch..................\n" + e.getMessage());
+			LOGGER.debug("In catch..................{}\n",e.getMessage());
 		}
 
-		return new Response(200, null, "Invalid labelId");
+		return new Response(HttpStatus.NOT_FOUND, null,Utility.RECORD_NOT_FOUND);
 	}
 
 	/**
@@ -78,7 +99,10 @@ public class LabelServiceImpl implements ILabelService {
 	 */
 	@Override
 	public Response getAllLabelByUser(String email) {
-		return new Response(200, repository.findByEmailId(email), "List of labels of particular user");
+		List<Label>labelList=repository.findByEmailId(email);
+		if(labelList!=null)
+			return new Response(HttpStatus.OK,labelList, "List of labels of particular user");
+		return new Response(HttpStatus.NOT_FOUND,null,Utility.RECORD_NOT_FOUND);
 	}
 
 	/**
@@ -88,13 +112,16 @@ public class LabelServiceImpl implements ILabelService {
 	 */
 	@Override
 	public Response renameLabel(String labelId, String newLabelName) {
-		Label labelFromDb = repository.findById(labelId).get();
-		if (labelFromDb == null)
-			return new Response(200, null, "Invalid labelId");
+		Label labelFromDb;
+		Optional<Label> label = repository.findById(labelId);
+		if (label.isPresent())
+			labelFromDb = label.get();
+		else
+			return new Response(HttpStatus.NOT_FOUND, null,Utility.RECORD_NOT_FOUND);
 
 		labelFromDb.setLabelName(newLabelName);
 		repository.save(labelFromDb);
-		return new Response(200, null, "Label renamed successfully...");
+		return new Response(HttpStatus.OK, null,Utility.RECORD_UPDATED);
 
 	}
 

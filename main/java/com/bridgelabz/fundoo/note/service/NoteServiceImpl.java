@@ -1,20 +1,24 @@
 package com.bridgelabz.fundoo.note.service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.bridgelabz.fundoo.exception.RecordNotFoundException;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.repository.ILabelRepository;
 import com.bridgelabz.fundoo.note.repository.INoteRepository;
+import com.bridgelabz.fundoo.note.util.ENUM;
 import com.bridgelabz.fundoo.responseentity.Response;
-import com.bridgelabz.fundoo.util.TokenUtil;
+import com.bridgelabz.fundoo.util.Utility;
 
 @Service
 public class NoteServiceImpl implements INoteService {
@@ -27,206 +31,221 @@ public class NoteServiceImpl implements INoteService {
 	@Autowired
 	private ILabelRepository labelRepository;
 
-	@Autowired
-	private Environment environment;
 
 	/**
-	 * Method to create a new note 
+	 * Method to create a new note
+	 * 
 	 * @param noteDto
 	 * @param token
-	 * @return response object with  "success" or "failure" message
+	 * @return response object with "success" or "failure" message
 	 */
 	@Override
-	public Response createNote(NoteDTO noteDto, String token) {
+	public Response createNote(NoteDTO noteDto, String emailId) {
 		try {
-
+			
 			Note newNote = modelMapper.map(noteDto, Note.class);
-			newNote.setEmailId(TokenUtil.decodeToken(token));
+			
+			
+			newNote.setEmailId(emailId);
 			newNote.setCreatedAt(java.util.Calendar.getInstance().getTime());
 			newNote.setEditedAt(java.util.Calendar.getInstance().getTime());
 			repository.save(newNote);
 		} catch (Exception e) {
-			return new Response(400, null, "failed to create note.....");
+			e.printStackTrace();
+			return new Response(HttpStatus.BAD_REQUEST, null, Utility.NEW_RECORD_CREATION_FAILED);
 		}
 
-		return new Response(200, null, "new note created successfully.....");
+		return new Response(HttpStatus.OK, null, Utility.NEW_RECORD_CREATED);
 	}
 
 	/**
 	 * Method to delete note permanently
+	 * 
 	 * @param noteId
 	 * @param token
-	 * @return response object with  "success" or "failure" message
+	 * @return response object with "success" or "failure" message
 	 */
 	@Override
-	public Response deleteNote(String noteId, String token) {
-		Note note = repository.findByIdAndEmailId(noteId, TokenUtil.decodeToken(token));
+	public Response deleteNote(String noteId, String emailId) {
+		Note note = repository.findByIdAndEmailId(noteId, emailId);
 		try {
 			if (note != null) {
 				repository.deleteById(noteId);
-				return new Response(200, null, "note deleted successfully.....");
+				return new Response(HttpStatus.OK, null, Utility.RECORD_DELETED);
 			}
 
 			else
-				return new Response(400, null, "Note with given id doesn't exist");
+				return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
 		} catch (Exception e) {
-			return new Response(400, null, "failed to delete note.....");
+			return new Response(HttpStatus.BAD_REQUEST, null, Utility.OPERATION_FAILED);
 		}
 	}
 
 	@Override
-	public Response getAllNote(String token) {
-		return new Response(200, repository.findByEmailId(TokenUtil.decodeToken(token)), "List of notes");
+	public Response getAllNote(String emailId) {
+		List<Note> noteList = repository.findByEmailId(emailId);
+		if (!noteList.isEmpty())
+			return new Response(HttpStatus.OK, noteList, Utility.RESOURCE_RETURNED);
+		return new Response(HttpStatus.NOT_FOUND, noteList, Utility.RECORD_NOT_FOUND);
 	}
 
-	
 	/**
 	 * Method to pin or un-pin note
+	 * 
 	 * @param token
-	 * @return response object with  "success" or "failure" message
+	 * @return response object with "success" or "failure" message
 	 */
 	@Override
-	public Response pinNote(String id, String token) {
-		Note notefromdb = repository.findByIdAndEmailId(id, TokenUtil.decodeToken(token));
+	public Response pinNote(String id, String emailId) {
+		Note notefromdb = repository.findByIdAndEmailId(id, emailId);
 
 		if (notefromdb == null)
-			return new Response(400, environment.getProperty("not exist"), null);
-
-		if (notefromdb.isPinned())
-			notefromdb.setPinned(false);
-		else
-			notefromdb.setPinned(true);
+			return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
+		notefromdb.setPinned(!notefromdb.isPinned());
 		repository.save(notefromdb);
-		return new Response(200, environment.getProperty("update"), null);
+		return new Response(HttpStatus.OK, null, Utility.RECORD_UPDATED);
 
 	}
+
 	/**
 	 * Method to archive or un-archive note
+	 * 
 	 * @param token
-	 * @return response object with  "success" or "failure" message
+	 * @return response object with "success" or "failure" message
 	 */
 
 	@Override
-	public Response archieveNote(String id, String token) {
+	public Response archieveNote(String id, String emailId) {
 
-		Note notefromdb = repository.findByIdAndEmailId(id, TokenUtil.decodeToken(token));
+		Note notefromdb = repository.findByIdAndEmailId(id, emailId);
 		if (notefromdb == null)
-			return new Response(400, environment.getProperty("not exist"), null);
+			return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
 
-		if (notefromdb.isArchieved())
-			notefromdb.setArchieved(false);
-		else
-			notefromdb.setArchieved(true);
+		notefromdb.setArchieved(!notefromdb.isArchieved());
 		repository.save(notefromdb);
-		return new Response(200, environment.getProperty("update"), null);
+		return new Response(HttpStatus.OK, null, Utility.RECORD_UPDATED);
 	}
 
 	/**
 	 * Method to return list of Pinned notes
+	 * 
 	 * @param token
-	 * @return response object with  list of Pinned notes
+	 * @return response object with list of Pinned notes
 	 */
 	@Override
-	public Response getPinnedNotes(String token) {
-		return new Response(200, repository.findByIsPinnedAndEmailId(true, TokenUtil.decodeToken(token)),
-				"List of Pinned notes");
+	public Response getPinnedNotes(String emailId) {
+		List<Note> pinNotes = repository.findByIsPinnedAndEmailId(true, emailId);
+		if (pinNotes != null)
+			return new Response(HttpStatus.OK, pinNotes, Utility.RESOURCE_RETURNED);
+		return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
 	}
 
 	/**
 	 * Method to return list of Archived notes
+	 * 
 	 * @param token
-	 * @return response object with  list of Archived notes
+	 * @return response object with list of Archived notes
 	 */
 	@Override
-	public Response getArchievedNotes(String token) {
-		return new Response(200, repository.findByIsArchievedAndEmailId(true, TokenUtil.decodeToken(token)),
-				"List of Archieved notes");
+	public Response getArchievedNotes(String emailId) {
 
+		List<Note> archNotes = repository.findByIsArchievedAndEmailId(true, emailId);
+		if (archNotes != null)
+			return new Response(HttpStatus.OK, archNotes, Utility.RESOURCE_RETURNED);
+		return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
 	}
-	
+
 	/**
 	 * Method to return list of trashed notes
+	 * 
 	 * @param token
-	 * @return response object with  list of trashed notes
+	 * @return response object with list of trashed notes
 	 */
 
 	@Override
-	public Response getTrashedNotes(String token) {
-		return new Response(200, repository.findByIsTrashedAndEmailId(true, TokenUtil.decodeToken(token)),
-				"List of Trashed notes");
-
+	public Response getTrashedNotes(String emailId) {
+		List<Note> trashNotes = repository.findByIsTrashedAndEmailId(true, emailId);
+		if (trashNotes != null)
+			return new Response(HttpStatus.OK, trashNotes, Utility.RESOURCE_RETURNED);
+		return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
 	}
-	
+
 	/**
 	 * Method to trash or un-trash note
+	 * 
 	 * @param noteId
 	 * @param token
-	 * @return response object with  "success" or "failure" message
+	 * @return response object with "success" or "failure" message
 	 */
 
 	@Override
-	public Response trashNote(String noteId, String token) {
-		Note notefromdb = repository.findByIdAndEmailId(noteId, TokenUtil.decodeToken(token));
+	public Response trashNote(String noteId, String emailId) {
+		Note notefromdb = repository.findByIdAndEmailId(noteId, emailId);
 		if (notefromdb == null)
-			return new Response(400, environment.getProperty("not exist"), null);
+			return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_UPDATED);
 
-		if (notefromdb.isTrashed())
-			notefromdb.setTrashed(false);
-		else
-			notefromdb.setTrashed(true);
+		notefromdb.setTrashed(!notefromdb.isTrashed());
 		repository.save(notefromdb);
-		return new Response(200, environment.getProperty("update"), null);
+		return new Response(HttpStatus.OK, null, Utility.RECORD_UPDATED);
 	}
-	
+
 	/**
 	 * Method to update title or description of note
+	 * 
 	 * @param noteId
 	 * @param note
 	 * @param token
-	 * @return response object with  "success" or "failure" message
+	 * @return response object with "success" or "failure" message
 	 */
-	
+
 	@Override
-	public Response updateNote(String noteId, NoteDTO note, String token) {
-		Note notefromdb = repository.findByIdAndEmailId(noteId, TokenUtil.decodeToken(token));
+	public Response updateNote(String noteId, NoteDTO note, String emailId) {
+		Note notefromdb = repository.findByIdAndEmailId(noteId, emailId);
 		if (notefromdb != null) {
-			if (!note.getTitle().isEmpty() || !note.getDescription().isEmpty()) {
-				notefromdb.setTitle(note.getTitle());
-				notefromdb.setDescription(note.getDescription());
-			}
+			notefromdb.setTitle(note.getTitle());
+			notefromdb.setDescription(note.getDescription());
 			notefromdb.setEditedAt(new Date());
 			repository.save(notefromdb);
-			return new Response(200, environment.getProperty("update"), null);
-		} else
-			return new Response(400, environment.getProperty("not exist"), null);
+			return new Response(HttpStatus.OK, null, Utility.RECORD_UPDATED);
+		}
+		return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
 
 	}
 
-
 	/**
 	 * Method to return List of notes sorted by name
+	 * 
 	 * @param token
-	 * @return response object with  list of notes sorted by name
+	 * @return response object with list of notes sorted by name
 	 */
 	@Override
-	public Response sortNoteByName(String token) {
-		List<Note> noteList = repository.findByEmailId(TokenUtil.decodeToken(token));
+	public Response sortNoteByName(String emailId) {
+		List<Note> noteList = repository.findByEmailId(emailId);
 
-		noteList.sort((Note n1, Note n2) -> n1.getTitle().compareTo(n2.getTitle()));
-		return new Response(200, noteList, "List of notes sorted by name");
+		if (noteList != null) {
+			noteList.sort((Note n1, Note n2) -> n1.getTitle().compareTo(n2.getTitle()));
+			return new Response(HttpStatus.OK, noteList, Utility.RESOURCE_RETURNED);
+		}
+		return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
+
 	}
 
 	/**
 	 * Method to return List of notes sorted by edited date
+	 * 
 	 * @param token
-	 * @return response object with  list of notes sorted by edited date
+	 * @return response object with list of notes sorted by edited date
 	 */
-	
+
 	@Override
-	public Response sortNoteByEditedDate(String token) {
-		List<Note> noteList = repository.findByEmailId(TokenUtil.decodeToken(token));
-		noteList.sort((Note n1, Note n2) -> n1.getCreatedAt().compareTo(n2.getCreatedAt()));
-		return new Response(200, noteList, "List of notes sorted by edited date");
+	public Response sortNoteByEditedDate(String emailId) {
+		List<Note> noteList = repository.findByEmailId(emailId);
+
+		if (noteList != null) {
+			noteList.sort((Note n1, Note n2) -> n1.getCreatedAt().compareTo(n2.getCreatedAt()));
+			return new Response(HttpStatus.OK, noteList, Utility.RESOURCE_RETURNED);
+		}
+		return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
 	}
 
 	/**
@@ -235,36 +254,37 @@ public class NoteServiceImpl implements INoteService {
 	 * @param noteId
 	 * @param collabaratorEmail
 	 * @param token
-	 * @return response object with "success" or failure  message
+	 * @return response object with "success" or failure message
 	 */
 	@Override
-	public Response addCollabarator(String noteId, String collabaratorEmail, String token) {
-		Note note = repository.findByIdAndEmailId(noteId, TokenUtil.decodeToken(token));
+	public Response addCollabarator(String noteId, String collabaratorEmail, String emailId) {
+		Note note = repository.findByIdAndEmailId(noteId, emailId);
 
 		if (note == null)
-			return new Response(400, null, "Note not exist");
+			return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
 
 		else {
 			note.getCollabList().add(collabaratorEmail);
 			repository.save(note);
 		}
-		return new Response(200, null, "Added collabarator sucessfully");
+		return new Response(HttpStatus.OK, null, Utility.RECORD_UPDATED);
 	}
 
 	/**
-	 * Method to return collaborators of  given note
+	 * Method to return collaborators of given note
 	 * 
 	 * @param noteId
 	 * @param token
-	 * @return response object with List of collaborators or failure  message
+	 * @return response object with List of collaborators or failure message
 	 */
 	@Override
-	public Response getAllCollabarators(String noteId, String token) {
-		Note note = repository.findByIdAndEmailId(noteId, TokenUtil.decodeToken(token));
+	public Response getAllCollabarators(String noteId, String emailId) {
+
+		Note note = repository.findByIdAndEmailId(noteId, emailId);
 		if (note != null)
-			return new Response(200, repository.findById(noteId).get().getCollabList(), "List of collabarartors");
+			return new Response(HttpStatus.OK, note.getCollabList(), Utility.RESOURCE_RETURNED);
 		else
-			return new Response(400, null, "Collabarator not exist");
+			return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
 	}
 
 	/**
@@ -273,31 +293,74 @@ public class NoteServiceImpl implements INoteService {
 	 * @param noteId
 	 * @param labelId
 	 * @param token
-	 * @return response object with "success" or failure  message
+	 * @return response object with "success" or failure message
 	 */
 	@Override
-	public Response addLabelToNote(String noteId, String labelId, String token) {
-		Note note = repository.findByIdAndEmailId(noteId, TokenUtil.decodeToken(token));
-		System.out.println("Found note by id: " + note);
+	public Response addLabelToNote(String noteId, String labelId, String emailId) {
+		Note note = repository.findByIdAndEmailId(noteId, emailId);
+
 		if (note == null)
-			return new Response(400, null, "Note not exist");
+			return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
 
 		Label label = labelRepository.findById(labelId).get();
-		System.out.println("Found label by id: " + label);
 
 		if (label == null)
-			return new Response(400, null, "Label not exist");
+			return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
 
-		System.out.println("Adding label to note:::::::::::");
-		note.getLabelList().add(label);
+		note.getLabelList().add(label.getLabelName());
 
 		label.getLabeledNotes().add(note);
 
 		repository.save(note);
 		labelRepository.save(label);
 
-		return new Response(200, null, "Label added to note");
+		return new Response(HttpStatus.OK, null, Utility.RECORD_UPDATED);
 
+	}
+
+	@Override
+	public Response addRemainder(LocalDateTime dateTime, String noteId, String email, ENUM repeat) {
+		Note note = repository.findByIdAndEmailId(noteId, email);
+		if (note == null)
+			throw new RecordNotFoundException("NOTENOTEXIST");
+
+		if (dateTime.compareTo(LocalDateTime.now()) > 0) {
+			EnumSet<ENUM> except = EnumSet.of(ENUM.DAILY, ENUM.DOESNOTREPEAT, ENUM.MONTHLY, ENUM.WEEKLY, ENUM.YEARLY);
+			if (except.contains(ENUM.valueOf(repeat.name()))) {
+				note.setRemainder(dateTime);
+				note.setRepeat(repeat);
+				repository.save(note);
+			}
+			return new Response(HttpStatus.OK, null, Utility.RECORD_UPDATED);
+		}
+		return new Response(HttpStatus.BAD_REQUEST, null, Utility.OPERATION_FAILED);
+
+	}
+
+	@Override
+	public Response updateRemainder(LocalDateTime dateTime, String noteId, String email, ENUM repeat) {
+		Note note = repository.findByIdAndEmailId(noteId, email);
+		if (note == null)
+			throw new RecordNotFoundException("Note doesn't exist");
+
+		if (dateTime.compareTo(LocalDateTime.now()) > 0) {
+			note.setRemainder(dateTime);
+			repository.save(note);
+			return new Response(HttpStatus.OK, null, Utility.RECORD_UPDATED);
+		}
+		return new Response(HttpStatus.BAD_REQUEST, null, Utility.RECORD_UPDATION_FAILED);
+
+	}
+
+	@Override
+	public Response deleteRemainder(String noteId, String email) {
+		Note note = repository.findByIdAndEmailId(noteId, email);
+		if (note == null)
+			throw new RecordNotFoundException("Note doesn't exist");
+
+		note.setRemainder(null);
+		repository.save(note);
+		return new Response(HttpStatus.OK, null, Utility.RECORD_DELETED);
 	}
 
 }

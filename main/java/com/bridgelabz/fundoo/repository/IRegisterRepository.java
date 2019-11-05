@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoo.repository;
 
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.bridgelabz.fundoo.model.RegisterUser;

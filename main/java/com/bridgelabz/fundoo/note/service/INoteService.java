@@ -1,6 +1,9 @@
 package com.bridgelabz.fundoo.note.service;
 
+import java.time.LocalDateTime;
+
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
+import com.bridgelabz.fundoo.note.util.ENUM;
 import com.bridgelabz.fundoo.responseentity.Response;
 
 public interface INoteService {
@@ -33,4 +36,10 @@ public interface INoteService {
 	public Response getAllCollabarators(String noteId, String token);
 
 	public Response addLabelToNote(String noteId, String labelId, String token);
+
+	public Response addRemainder(LocalDateTime dateTime, String noteId, String email, ENUM repeat);
+
+	public Response updateRemainder(LocalDateTime dateTime, String noteId, String email, ENUM repeat);
+
+	public Response deleteRemainder(String noteId, String email);
 }
