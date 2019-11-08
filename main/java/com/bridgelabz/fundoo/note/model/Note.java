@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoo.note.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,8 +19,12 @@ import lombok.NoArgsConstructor;
 @Document
 @Data
 @AllArgsConstructor
-public class Note {
-	@Id
+public class Note implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	@Id 
 	private String id;
 	private String emailId;
 	private String title;

@@ -9,10 +9,12 @@ import com.bridgelabz.fundoo.note.model.Note;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Document(collection = "Register")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class RegisterUser {
 	@Id
 	private String id;
@@ -23,6 +25,6 @@ public class RegisterUser {
 	private List<Label> labelList;
 	private List<Note> noteList;
 	private String profilePic;
-	private boolean isVerified;
+	private boolean isVerified=false;
 	
 }

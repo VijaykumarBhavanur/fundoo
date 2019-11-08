@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import com.bridgelabz.fundoo.responseentity.Response;
 import com.bridgelabz.fundoo.util.Utility;
 
 @Service
+@EnableCaching
 public class LabelServiceImpl implements ILabelService {
 
 	@Autowired

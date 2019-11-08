@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoo.note.service;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.EnumSet;
@@ -7,6 +8,8 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +24,13 @@ import com.bridgelabz.fundoo.responseentity.Response;
 import com.bridgelabz.fundoo.util.Utility;
 
 @Service
-public class NoteServiceImpl implements INoteService {
+//@Cacheable
+public class NoteServiceImpl implements INoteService,Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Autowired
 	private ModelMapper modelMapper;
 	@Autowired
@@ -31,21 +39,17 @@ public class NoteServiceImpl implements INoteService {
 	@Autowired
 	private ILabelRepository labelRepository;
 
-
 	/**
 	 * Method to create a new note
 	 * 
 	 * @param noteDto
 	 * @param token
-	 * @return response object with "success" or "failure" message
+	 * @return response with "OK" status code or "BAD_REQUEST" status code
 	 */
 	@Override
 	public Response createNote(NoteDTO noteDto, String emailId) {
 		try {
-			
 			Note newNote = modelMapper.map(noteDto, Note.class);
-			
-			
 			newNote.setEmailId(emailId);
 			newNote.setCreatedAt(java.util.Calendar.getInstance().getTime());
 			newNote.setEditedAt(java.util.Calendar.getInstance().getTime());
@@ -63,7 +67,7 @@ public class NoteServiceImpl implements INoteService {
 	 * 
 	 * @param noteId
 	 * @param token
-	 * @return response object with "success" or "failure" message
+	 * @return response with "OK" status code or "NOT_FOUND" status code
 	 */
 	@Override
 	public Response deleteNote(String noteId, String emailId) {
@@ -81,7 +85,15 @@ public class NoteServiceImpl implements INoteService {
 		}
 	}
 
+	/**
+	 * MethTo get notes of given user
+	 * 
+	 * @param token
+	 * @return response with list of notes and "OK" status code or "NOT_FOUND"
+	 *         status code status code
+	 */
 	@Override
+	//@Cacheable(value = "/allNotes")
 	public Response getAllNote(String emailId) {
 		List<Note> noteList = repository.findByEmailId(emailId);
 		if (!noteList.isEmpty())
@@ -93,11 +105,12 @@ public class NoteServiceImpl implements INoteService {
 	 * Method to pin or un-pin note
 	 * 
 	 * @param token
-	 * @return response object with "success" or "failure" message
+	 * @return response with "OK" status code or "NOT_FOUND" status code
 	 */
+	//@Cacheable(value = "notes", key = "#emailId")
 	@Override
 	public Response pinNote(String id, String emailId) {
-		Note notefromdb = repository.findByIdAndEmailId(id, emailId);
+		Note notefromdb = repository.findByIdAndEmailId(id,emailId);
 
 		if (notefromdb == null)
 			return new Response(HttpStatus.NOT_FOUND, null, Utility.RECORD_NOT_FOUND);
@@ -130,7 +143,8 @@ public class NoteServiceImpl implements INoteService {
 	 * Method to return list of Pinned notes
 	 * 
 	 * @param token
-	 * @return response object with list of Pinned notes
+	 * @return response with list of Pinned notes and "OK" status code or
+	 *         "NOT_FOUND" status code
 	 */
 	@Override
 	public Response getPinnedNotes(String emailId) {
@@ -144,7 +158,8 @@ public class NoteServiceImpl implements INoteService {
 	 * Method to return list of Archived notes
 	 * 
 	 * @param token
-	 * @return response object with list of Archived notes
+	 * @return response object with list of Archived notes and "OK" status code or
+	 *         "NOT_FOUND" status code
 	 */
 	@Override
 	public Response getArchievedNotes(String emailId) {
@@ -159,7 +174,8 @@ public class NoteServiceImpl implements INoteService {
 	 * Method to return list of trashed notes
 	 * 
 	 * @param token
-	 * @return response object with list of trashed notes
+	 * @return response object with list of trashed notes "OK" status code or
+	 *         "NOT_FOUND" status code
 	 */
 
 	@Override
@@ -175,7 +191,7 @@ public class NoteServiceImpl implements INoteService {
 	 * 
 	 * @param noteId
 	 * @param token
-	 * @return response object with "success" or "failure" message
+	 * @return response object with "OK" status code or "NOT_FOUND" status code
 	 */
 
 	@Override
@@ -195,7 +211,7 @@ public class NoteServiceImpl implements INoteService {
 	 * @param noteId
 	 * @param note
 	 * @param token
-	 * @return response object with "success" or "failure" message
+	 * @return response object with "OK" status code or "NOT_FOUND" status code
 	 */
 
 	@Override
@@ -216,7 +232,8 @@ public class NoteServiceImpl implements INoteService {
 	 * Method to return List of notes sorted by name
 	 * 
 	 * @param token
-	 * @return response object with list of notes sorted by name
+	 * @return response object with list of notes sorted by name and "OK" status
+	 *         code or "NOT_FOUND" status code
 	 */
 	@Override
 	public Response sortNoteByName(String emailId) {
@@ -234,7 +251,8 @@ public class NoteServiceImpl implements INoteService {
 	 * Method to return List of notes sorted by edited date
 	 * 
 	 * @param token
-	 * @return response object with list of notes sorted by edited date
+	 * @return response object with list of notes sorted by edited date and "OK"
+	 *         status code or "NOT_FOUND" status code
 	 */
 
 	@Override
@@ -254,7 +272,7 @@ public class NoteServiceImpl implements INoteService {
 	 * @param noteId
 	 * @param collabaratorEmail
 	 * @param token
-	 * @return response object with "success" or failure message
+	 * @return response with "OK" status code or "NOT_FOUND" status code
 	 */
 	@Override
 	public Response addCollabarator(String noteId, String collabaratorEmail, String emailId) {
@@ -275,7 +293,8 @@ public class NoteServiceImpl implements INoteService {
 	 * 
 	 * @param noteId
 	 * @param token
-	 * @return response object with List of collaborators or failure message
+	 * @return response with List of collaborators "OK" status code or "NOT_FOUND"
+	 *         status code
 	 */
 	@Override
 	public Response getAllCollabarators(String noteId, String emailId) {
@@ -293,7 +312,7 @@ public class NoteServiceImpl implements INoteService {
 	 * @param noteId
 	 * @param labelId
 	 * @param token
-	 * @return response object with "success" or failure message
+	 * @return response with "OK" status code or "NOT_FOUND" status code
 	 */
 	@Override
 	public Response addLabelToNote(String noteId, String labelId, String emailId) {
@@ -318,6 +337,15 @@ public class NoteServiceImpl implements INoteService {
 
 	}
 
+	/**
+	 * Method to add remainder to given note
+	 * 
+	 * @param localDateTime
+	 * @param noteId
+	 * @param token
+	 * @param repeat
+	 * @return @return response with "OK" status code or "BAD_REQUEST" status code
+	 */
 	@Override
 	public Response addRemainder(LocalDateTime dateTime, String noteId, String email, ENUM repeat) {
 		Note note = repository.findByIdAndEmailId(noteId, email);
@@ -337,6 +365,15 @@ public class NoteServiceImpl implements INoteService {
 
 	}
 
+	/**
+	 * Method to update remainder of given note
+	 * 
+	 * @param localDateTime
+	 * @param noteId
+	 * @param token
+	 * @param repeat
+	 * @return response with "OK" status code or "BAD_REQUEST" status code
+	 */
 	@Override
 	public Response updateRemainder(LocalDateTime dateTime, String noteId, String email, ENUM repeat) {
 		Note note = repository.findByIdAndEmailId(noteId, email);
@@ -352,6 +389,13 @@ public class NoteServiceImpl implements INoteService {
 
 	}
 
+	/**
+	 * Purpose: To delete remainder of given note
+	 * 
+	 * @param noteId
+	 * @param token
+	 * @return @return response with "OK" status code or RecordNotFoundException
+	 */
 	@Override
 	public Response deleteRemainder(String noteId, String email) {
 		Note note = repository.findByIdAndEmailId(noteId, email);

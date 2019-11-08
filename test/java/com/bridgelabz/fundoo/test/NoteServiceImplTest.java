@@ -71,6 +71,7 @@ public class NoteServiceImplTest {
 	public void testdeleteNote() throws Exception {
 
 		when(repository.findByIdAndEmailId(noteId, email)).thenReturn(note);
+		
 		doNothing().when(repository).deleteById(noteId);
 
 		Response response = service.deleteNote(noteId, email);

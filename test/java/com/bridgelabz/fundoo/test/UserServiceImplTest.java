@@ -3,9 +3,7 @@ package com.bridgelabz.fundoo.test;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-import java.util.Optional;
-
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,14 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.bridgelabz.fundoo.dto.RegisterDTO;
 import com.bridgelabz.fundoo.exception.LoginException;
-import com.bridgelabz.fundoo.exception.RegistrationException;
 import com.bridgelabz.fundoo.model.RegisterUser;
 import com.bridgelabz.fundoo.repository.IRegisterRepository;
 import com.bridgelabz.fundoo.responseentity.Response;
@@ -53,18 +46,20 @@ public class UserServiceImplTest {
 	LoginException loginException;
 	
 
-	RegisterUser user = new RegisterUser("1", "user@gmail.com", "user1", "9164480832", "user@123", null, null, null, false);
+	RegisterUser user = new RegisterUser("1", "user@gmail.com", "user1", "9164480832", "user@123", null, null, null, true);
 
 	String email="test@gmail.com";
-	String password="test!123";
+	String password="user@123";
+	
 	@Test
 	public void testvalidateCredentials() throws Exception
 	{
 		when(userRepository.findByEmailId(email)).thenReturn(user);
 		when(bCryptPasswordEncoder.matches(password,password)).thenReturn(true);
-		when(email.isEmpty()).thenThrow(LoginException.class);
-		when(password.isEmpty()).thenThrow(LoginException.class);
+		Assert.assertTrue(bCryptPasswordEncoder.matches(password,password));
+	    Assert.assertTrue((user.isVerified()));
 		Response response=userServiceImpl.validateCredentials(email, password);
+		System.out.println("response::::"+response);
 		assertEquals(HttpStatus.OK,response.getStatusCode());
 	}
 	

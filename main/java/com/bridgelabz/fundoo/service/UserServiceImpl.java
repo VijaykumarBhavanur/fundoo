@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -28,6 +29,7 @@ import com.bridgelabz.fundoo.util.TokenUtil;
 import com.bridgelabz.fundoo.util.Utility;
 
 @Service
+@EnableCaching
 public class UserServiceImpl implements IUserService {
 
 	@Autowired
@@ -45,18 +47,16 @@ public class UserServiceImpl implements IUserService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	public Response validateCredentials(String email, String password) {
-		if(email.isEmpty() || password.isEmpty())
+		if (email.isEmpty() || password.isEmpty())
 			throw new LoginException("Please enter both fields!!");
 		RegisterUser user = regRepository.findByEmailId(email);
 		if (user == null)
 			throw new LoginException("Invalid EmailId");
 		boolean result = bCryptPasswordEncoder.matches(password, user.getPassword());
 
-		if (!result)
-			throw new LoginException("Wrong Password!!!");
-		if(!user.isVerified())
-			throw new UnautorizedException("Unauthorized User");
-		return new Response(HttpStatus.OK, null, "Login sucess");
+		if (result && user.isVerified())
+			return new Response(HttpStatus.OK, null,"Login sucess");
+		throw new UnautorizedException("Unauthorized User");
 	}
 
 	public Response registerUser(RegisterDTO regdto) {
@@ -126,9 +126,7 @@ public class UserServiceImpl implements IUserService {
 
 	@Override
 	public List<RegisterUser> getUsers() {
-		List<RegisterUser> userList = regRepository.findAll();
-		LOGGER.info("Getting data::::::::> {}" + userList);
-		return userList;
+		return regRepository.findAll();
 	}
 
 	@Override
@@ -164,10 +162,9 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	@Override
-	public Response verifyUser(String email) 
-	{
-		RegisterUser user=regRepository.findByEmailId(email);
-		if(user==null)
+	public Response verifyUser(String email) {
+		RegisterUser user = regRepository.findByEmailId(email);
+		if (user == null)
 			throw new UnautorizedException("Unautorized user");
 		user.setVerified(true);
 		regRepository.save(user);
@@ -175,12 +172,11 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	@Override
-	public Response forgotPassword(String email) 
-	{
-		RegisterUser user=regRepository.findByEmailId(email);
-		if(user==null)
+	public Response forgotPassword(String email) {
+		RegisterUser user = regRepository.findByEmailId(email);
+		if (user == null)
 			throw new UnautorizedException("Unautorized user");
-		
+
 		String token = getJWTToken(email);
 		Response response = sendEmail(email, token);
 		return new Response(HttpStatus.OK, null, Utility.RECORD_UPDATED);
