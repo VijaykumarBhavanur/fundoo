@@ -58,7 +58,7 @@ public class LabelServiceImplTest {
 	}
 
 	/**
-	 * Test case for update label api
+	 * Test case for update label api..
 	 */
 	@Test
 	public void updateLabelTest() {
