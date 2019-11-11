@@ -39,7 +39,7 @@ public class LabelServiceImplTest {
 	@Mock
 	ModelMapper modelMapper;
 
-	Label label = new Label("1", "test@gmail.com", "label1", null);
+	Label label = new Label("1", "user@gmail.com", "label1", null);
 
 	@Before
 	public void Setup() throws Exception {
@@ -66,7 +66,7 @@ public class LabelServiceImplTest {
 		label.setLabelName("7 wonders in world....");
 		when(labelRepository.save(label)).thenReturn(label);
 	}
-
+test
 	/**
 	 * Test case for delete label api
 	 */
