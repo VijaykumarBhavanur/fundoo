@@ -44,33 +44,7 @@ public class FundooAppTest {
 	{
 		
 	}
-	/*
-	 * @InjectMocks private UserController usercontroller;
-	 * 
-	 * @Mock private IUserService userServiceImpl;
-	 * 
-	 * private MockMvc mockMvc;
-	 * 
-	 * 
-	 * 
-	 * @Before public void setup() throws Exception {
-	 * MockitoAnnotations.initMocks(this);
-	 * mockMvc=MockMvcBuilders.standaloneSetup(usercontroller).build(); }
-	 * 
-	 * @Test public void getAllUsersTest() throws Exception { List<RegisterUser>
-	 * users=new ArrayList<RegisterUser>(); users.add(new RegisterUser("1",
-	 * "test1@gmail.com", "user1", "9854577879", "user@12", null, null, null));
-	 * users.add(new RegisterUser("2", "test2@gmail.com", "user2", "9457877894",
-	 * "user@21", null, null, null));
-	 * 
-	 * when(userServiceImpl.getUsers()).thenReturn((List)users);
-	 * mockMvc.perform(get("/user/users")) .andExpect(status().isOk())
-	 * .andExpect(view().name("users"))
-	 * .andExpect(model().attribute("users",hasSize(2)));
-	 * 
-	 * }
-	 */
-	//To test fundo APP
+	
 }
 
 
