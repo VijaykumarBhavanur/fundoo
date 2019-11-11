@@ -27,7 +27,7 @@ import com.bridgelabz.fundoo.model.RegisterUser;
 import com.bridgelabz.fundoo.service.IUserService;
 import static org.hamcrest.Matchers.*;
 
-//@RunWith(MockitoJUnitRunner.class)
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class FundooAppTest {
