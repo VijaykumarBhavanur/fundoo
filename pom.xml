@@ -17,6 +17,9 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<properties>
+    <start-class>com.bridgelabz.fundoo.FundooApplication</start-class>
+</properties>
 	</properties>
 
 	<dependencies>
@@ -138,10 +141,10 @@
 
 	<build>
 		<plugins>
-			<!--<plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin> -->
+			</plugin> 
 
 			<plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>
