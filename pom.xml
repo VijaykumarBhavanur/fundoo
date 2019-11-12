@@ -10,15 +10,14 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.bridgelabz</groupId>
-	<artifactId>EncryptPassword</artifactId>
+	<artifactId>FundooApplication</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>EncryptPassword</name>
-	<description>Demo project for Spring Boot</description>
+	<name>FundooApplication</name>
+	<description>Fundoo Application</description>
 
 	<properties>
 		<java.version>1.8</java.version>
-    <start-class>com.bridgelabz.fundoo.FundooApplication</start-class>
-</properties>
+	</properties>
 
 	<dependencies>
 
@@ -142,7 +141,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin> 
+			</plugin>
 
 			<plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>
