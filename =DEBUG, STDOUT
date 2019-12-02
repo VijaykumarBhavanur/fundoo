@@ -1,0 +1,27 @@
+2019-11-05 12:32:11.293  INFO 8291 --- [restartedMain] com.bridgelabz.fundoo.FundooApplication  : Starting FundooApplication on admin1 with PID 8291 (/home/admin1/Desktop/Spring_Programs/Fundoo/target/classes started by admin1 in /home/admin1/Desktop/Spring_Programs/Fundoo)
+2019-11-05 12:32:11.294  INFO 8291 --- [restartedMain] com.bridgelabz.fundoo.FundooApplication  : No active profile set, falling back to default profiles: default
+2019-11-05 12:32:11.482  INFO 8291 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data repositories in DEFAULT mode.
+2019-11-05 12:32:11.489  INFO 8291 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 7ms. Found 3 repository interfaces.
+2019-11-05 12:32:11.550  INFO 8291 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2019-11-05 12:32:11.551  INFO 8291 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2019-11-05 12:32:11.552  INFO 8291 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.26]
+2019-11-05 12:32:11.556  INFO 8291 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2019-11-05 12:32:11.556  INFO 8291 --- [restartedMain] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 261 ms
+2019-11-05 12:32:11.578  INFO 8291 --- [restartedMain] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=MULTIPLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2019-11-05 12:32:11.579  INFO 8291 --- [restartedMain] org.mongodb.driver.cluster               : Adding discovered server localhost:27017 to client view of cluster
+2019-11-05 12:32:11.581  INFO 8291 --- [cluster-ClusterId{value='5dc11e73be9b872063712d98', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:20}] to localhost:27017
+2019-11-05 12:32:11.582  INFO 8291 --- [cluster-ClusterId{value='5dc11e73be9b872063712d98', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 0, 12]}, minWireVersion=0, maxWireVersion=7, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=325288}
+2019-11-05 12:32:11.583  INFO 8291 --- [cluster-ClusterId{value='5dc11e73be9b872063712d98', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Discovered cluster type of STANDALONE
+2019-11-05 12:32:11.584  WARN 8291 --- [restartedMain] o.s.data.convert.CustomConversions       : Registering converter from class java.time.LocalDateTime to class java.time.Instant as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2019-11-05 12:32:11.584  WARN 8291 --- [restartedMain] o.s.data.convert.CustomConversions       : Registering converter from class java.time.Instant to class java.time.LocalDateTime as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2019-11-05 12:32:11.600  INFO 8291 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2019-11-05 12:32:11.607  WARN 8291 --- [restartedMain] o.s.data.convert.CustomConversions       : Registering converter from class java.time.LocalDateTime to class java.time.Instant as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2019-11-05 12:32:11.607  WARN 8291 --- [restartedMain] o.s.data.convert.CustomConversions       : Registering converter from class java.time.Instant to class java.time.LocalDateTime as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2019-11-05 12:32:11.747  INFO 8291 --- [restartedMain] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2019-11-05 12:32:11.777  INFO 8291 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
+2019-11-05 12:32:11.778  INFO 8291 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
+2019-11-05 12:32:11.780  INFO 8291 --- [restartedMain] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
+2019-11-05 12:32:11.967  INFO 8291 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2019-11-05 12:32:11.968  INFO 8291 --- [restartedMain] com.bridgelabz.fundoo.FundooApplication  : Started FundooApplication in 0.716 seconds (JVM running for 77.204)
+2019-11-05 12:32:11.970  INFO 8291 --- [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2019-11-05 12:32:25.218  INFO 8291 --- [Thread-10] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
